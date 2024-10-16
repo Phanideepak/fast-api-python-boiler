@@ -17,3 +17,5 @@ Requirements:
 5. pip install sqlalchemy
 6. pip install python-decouple
 7. pip install python-dotenv
+8. pip install pymysql
+9. pip install cryptography
