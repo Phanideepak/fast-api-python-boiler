@@ -15,5 +15,5 @@ Requirements:
 4. pip install uvicorn 
    - uvicorn -- version
 5. pip install sqlalchemy
-6. pip install python-decouple (decouple)
+6. pip install python-decouple
 7. pip install python-dotenv
