@@ -14,4 +14,23 @@ class DeptExecutor:
                   return ResponseUtils.error_wrap(str(e),HTTPStatus.BAD_REQUEST)
 
             return DeptService.add(request, db)
+
+      def getById(id, db : Session):
+            try:
+                  ValidationUtils.isZero(id, 'dept_id')
+            except Exception as e:
+                  return ResponseUtils.error_wrap(str(e), HTTPStatus.BAD_REQUEST)
+            
+            return DeptService.getById(id, db)
+      
+      def deleteById(id, db : Session):
+            try:
+                  ValidationUtils.isZero(id, 'dept_id')
+            except Exception as e:
+                  return ResponseUtils.error_wrap(str(e), HTTPStatus.BAD_REQUEST)
+            
+            return DeptService.deleteById(id, db)
+      
+      def getAll(db : Session):
+          return DeptService.getAll(db)
             
