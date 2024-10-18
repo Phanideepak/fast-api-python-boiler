@@ -8,6 +8,14 @@ class DepartmentRepoService:
     def save(dept : Department, db : Session):
         db.add(dept)
         db.commit()
+    
+    def update(dept : Department, db : Session):
+        db.query(Department).filter(Department.id == dept.id).update({Department.name : dept.name,
+                                      Department.description : dept.description, 
+                                      Department.is_approved : dept.is_approved,
+                                      Department.is_deleted : dept.is_deleted
+                                      })
+        db.commit()
 
     def getByName(name : str, db : Session):
         return db.query(Department).filter(Department.name == name).first()

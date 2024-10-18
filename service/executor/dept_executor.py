@@ -14,6 +14,16 @@ class DeptExecutor:
                   return ResponseUtils.error_wrap(str(e),HTTPStatus.BAD_REQUEST)
 
             return DeptService.add(request, db)
+      
+      def update(request, db : Session):
+            try:
+                  ValidationUtils.isZero(request.id, 'id')
+                  ValidationUtils.isEmpty(request.name,'name')
+                  ValidationUtils.isEmpty(request.description, 'description')
+            except Exception as e:
+                  return ResponseUtils.error_wrap(str(e),HTTPStatus.BAD_REQUEST)
+
+            return DeptService.update(request, db)
 
       def getById(id, db : Session):
             try:

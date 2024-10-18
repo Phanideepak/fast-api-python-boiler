@@ -1,4 +1,13 @@
 class MessageUtils:
+    def entity_already_exists(entity_name, field_name, val):
+        return f'{entity_name} with {field_name} : {val} already exists'
+    
+    def entities_not_found(entity_name):
+        return f'No {entity_name} found'
+    
+    def fields_not_modified():
+        return 'Fields Not Modified'
+    
     def entity_not_found(entity_name, field_name, val):
         return f'No {entity_name} Found by {field_name} : {val}'
     

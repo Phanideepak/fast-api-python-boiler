@@ -14,6 +14,7 @@ class Department(Base):
     created_at = Column(DateTime(), default = datetime.now())
     updated_at = Column(DateTime(), onupdate = datetime.now(), default = datetime.now())
 
-    def __init__(self, name, description):
+    def __init__(self, name, description, id = None):
+        self.id = id
         self.name = name 
         self.description = description
