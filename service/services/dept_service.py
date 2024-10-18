@@ -58,12 +58,30 @@ class DeptService:
         if dept is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
         
+        if dept.is_deleted:
+            return ResponseUtils.error_wrap('Already Deleted!', HTTPStatus.BAD_REQUEST)
+
         try:
-            DepartmentRepoService.deleteById(id, db)
+            DepartmentRepoService.softDeleteById(id, db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
 
         return ResponseUtils.wrap('Deleted successfully')
+    
+    def restoreById(id : int, db : Session):
+        dept = DepartmentRepoService.getById(id, db)
+        if dept is None:
+            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
+        
+        if not dept.is_deleted:
+            return ResponseUtils.error_wrap('Already Restored!', HTTPStatus.BAD_REQUEST)
+
+        try:
+            DepartmentRepoService.restoreById(id, db)
+        except Exception as e:
+            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        return ResponseUtils.wrap('Restored successfully')
         
     def getAll(db : Session):
         depts = DepartmentRepoService.getAll(db)

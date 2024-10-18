@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Response
 from service.executor.dept_executor import DeptExecutor
 from config import database
-from http import HTTPStatus
 router = APIRouter(prefix= '/dept',tags= ['Department'])
 
 get_db = database.get_db
@@ -27,8 +26,14 @@ def getById(id : int,  resp : Response, db : Session = Depends(get_db)):
     return responseBody.dict(exclude_none= True)
 
 @router.delete('', summary= 'Operations related to Delete by Id')
-def getById(id : int,  resp : Response, db : Session = Depends(get_db)):
+def deleteById(id : int,  resp : Response, db : Session = Depends(get_db)):
     responseBody = DeptExecutor.deleteById(id, db)
+    resp.status_code = responseBody.status_code
+    return responseBody.dict(exclude_none= True)
+
+@router.patch('/restore', summary= 'Operations related to Restore by Id')
+def restoreById(id : int,  resp : Response, db : Session = Depends(get_db)):
+    responseBody = DeptExecutor.restoreById(id, db)
     resp.status_code = responseBody.status_code
     return responseBody.dict(exclude_none= True)
 

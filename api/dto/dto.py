@@ -8,7 +8,7 @@ class AddDepartmentBody(BaseModel):
     description : str
 
 class UpdateDepartmentBody(BaseModel):
-    id : int
+    id : int = Field(min = 1)
     name : str
     description : str
 

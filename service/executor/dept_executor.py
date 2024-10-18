@@ -1,7 +1,6 @@
 from service.utils.validation_utils import ValidationUtils
 from service.utils.response_util import ResponseUtils
 from service.services.dept_service import DeptService
-from api.dto.dto import WrappedResponse
 from http import HTTPStatus
 from sqlalchemy.orm import Session
 
@@ -40,6 +39,14 @@ class DeptExecutor:
                   return ResponseUtils.error_wrap(str(e), HTTPStatus.BAD_REQUEST)
             
             return DeptService.deleteById(id, db)
+      
+      def restoreById(id, db : Session):
+            try:
+                  ValidationUtils.isZero(id, 'dept_id')
+            except Exception as e:
+                  return ResponseUtils.error_wrap(str(e), HTTPStatus.BAD_REQUEST)
+            
+            return DeptService.restoreById(id, db)
       
       def getAll(db : Session):
           return DeptService.getAll(db)

@@ -1,5 +1,4 @@
 from config.database import Base
-from sqlalchemy.orm import Session
 from sqlalchemy import Column, Integer, String, Boolean,DateTime
 from datetime import datetime
 

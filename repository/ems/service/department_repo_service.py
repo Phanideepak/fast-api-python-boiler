@@ -1,6 +1,5 @@
 from repository.ems.model.ems import Department
 from sqlalchemy.orm import Session
-from config import database
 from fastapi import Depends
 
 
@@ -22,6 +21,14 @@ class DepartmentRepoService:
     
     def getById(id : int, db : Session):
         return db.query(Department).filter(Department.id == id).first()
+    
+    def softDeleteById(id : int, db : Session):
+        db.query(Department).filter(Department.id == id).update({Department.is_deleted : True})
+        db.commit()
+    
+    def restoreById(id : int, db : Session):
+        db.query(Department).filter(Department.id == id).update({Department.is_deleted : False})
+        db.commit()
     
     def deleteById(id: int, db : Session):
         db.query(Department).filter(Department.id == id).delete()
