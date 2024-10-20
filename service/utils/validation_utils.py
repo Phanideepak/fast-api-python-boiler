@@ -16,6 +16,10 @@ def isGreaterThan(field,threshold):
 
     
 class ValidationUtils():
+    def isTrue(expression : bool, message : str):
+        if not expression:
+            raise Exception(message)
+
     def isEmpty(value : str, field: str):
         if value is None:
            raise Exception(noneMessage(field))

@@ -3,6 +3,27 @@ from pydantic import BaseModel, Field
 
 T = TypeVar('T')
 
+class SignUpRequest(BaseModel):
+     firstname : str 
+     lastname : str
+     email : str 
+     password: str
+     confirm_password : str
+
+class SignUpResponse(BaseModel):
+     access_token : str
+     refresh_token : str
+     message : str
+
+class LoginRequest(BaseModel):
+     email : str 
+     password: str
+
+class LoginResponse(BaseModel):
+     access_token : str
+     refresh_token : str
+     message : str
+
 class AddDepartmentBody(BaseModel):
     name : str
     description : str
@@ -12,6 +33,12 @@ class UpdateDepartmentBody(BaseModel):
     name : str
     description : str
 
+class UserDto(BaseModel):
+     id : int 
+     firstname : str
+     lastname : str
+     email : str
+     role : str
 class DepartmentDto(BaseModel):
      id : int
      name : str

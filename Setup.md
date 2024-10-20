@@ -19,3 +19,10 @@ Requirements:
 7. pip install python-dotenv
 8. pip install pymysql
 9. pip install cryptography
+10. pip install passlib
+11. pip install bcrypt
+12. openssl rand -hex 32
+
+
+Reference:
+- Exception:  https://www.youtube.com/watch?v=NJu0tmwb3n0&list=PLEt8Tae2spYnHy378vMlPH--87cfeh33P&index=9

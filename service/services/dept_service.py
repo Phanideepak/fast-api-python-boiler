@@ -8,11 +8,11 @@ from service.mapper.mapper import departmentModelToDepartmentDto, departmentMode
 from http import HTTPStatus
 
 class DeptService:
-    def add(request : AddDepartmentBody, db : Session):
+    def add(request : AddDepartmentBody, uid, db : Session):
         if DepartmentRepoService.getByName(request.name, db) is not None:
             return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('Department','name', request.name), HTTPStatus.INTERNAL_SERVER_ERROR)
         try:
-            DepartmentRepoService.save(Department(name= request.name, description = request.description), db)
+            DepartmentRepoService.save(Department(name= request.name, description = request.description, created_by = uid), db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
         
@@ -53,7 +53,7 @@ class DeptService:
 
         return ResponseUtils.wrap(departmentModelToDepartmentDto(dept))
 
-    def deleteById(id : int, db : Session):
+    def deleteById(id : int, uid, db : Session):
         dept = DepartmentRepoService.getById(id, db)
         if dept is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
@@ -62,7 +62,7 @@ class DeptService:
             return ResponseUtils.error_wrap('Already Deleted!', HTTPStatus.BAD_REQUEST)
 
         try:
-            DepartmentRepoService.softDeleteById(id, db)
+            DepartmentRepoService.softDeleteById(id, uid, db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
 
@@ -82,7 +82,23 @@ class DeptService:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
 
         return ResponseUtils.wrap('Restored successfully')
+    
+    def approveById(id : int, uid, db : Session):
+        dept = DepartmentRepoService.getById(id, db)
+        if dept is None:
+            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
         
+        if dept.is_approved:
+            return ResponseUtils.error_wrap('Already Approved!', HTTPStatus.BAD_REQUEST)
+
+        try:
+            DepartmentRepoService.approveById(id, uid, db)
+        except Exception as e:
+            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+
+        return ResponseUtils.wrap('Restored successfully')
+
+
     def getAll(db : Session):
         depts = DepartmentRepoService.getAll(db)
         if len(depts) == 0:
