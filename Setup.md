@@ -21,6 +21,7 @@ Requirements:
 9. pip install cryptography
 10. pip install passlib
 11. pip install bcrypt
+pip install httpx
 12. openssl rand -hex 32
 
 

@@ -6,8 +6,6 @@ from .main.config import DevelopmentConfig
 
 engine = create_engine(DevelopmentConfig.SQLALCHEMY_DATABASE_URI, echo=True)
 
-print(DevelopmentConfig.SQLALCHEMY_DATABASE_URI)
-
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False,)
 
 Base = declarative_base()
