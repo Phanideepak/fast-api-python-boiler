@@ -93,6 +93,7 @@ class Employee(Base):
     contact = Column(String, nullable=False, unique=True)
     is_approved = Column(Boolean, default = False)
     office_mail = Column(String)
+    designation = Column(String, nullable = False)
     approved_by = Column(Integer)
     approved_at = Column(DateTime())
     deleted_by = Column(Integer)
@@ -103,11 +104,13 @@ class Employee(Base):
     updated_at = Column(DateTime(), onupdate = datetime.now(), default = datetime.now())
     dept_id = Column(Integer, ForeignKey("department.id"), nullable = False)
 
-    def __init__(self, id = None, eid = None, firstname = None, lastname = None, contact = None, created_by = None, dept_id = None):
+    def __init__(self, id = None, eid = None, office_mail = None, firstname = None, lastname = None, contact = None, created_by = None, dept_id = None, designation = None):
         self.id = id
         self.eid = eid
+        self.office_mail = office_mail
         self.lastname = lastname
         self.contact = contact
         self.firstname = firstname
         self.created_by = created_by
         self.dept_id = dept_id
+        self.designation = designation

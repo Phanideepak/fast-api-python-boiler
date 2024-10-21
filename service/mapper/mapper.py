@@ -8,6 +8,8 @@ def employeeModelToEmployeeDto(emp : Employee, dept : Department, created_user :
     empDto =  EmployeeDto(id = emp.id, eid = emp.eid, firstname = emp.firstname, lastname = emp.lastname, contact = emp.contact,
                        is_approved= emp.is_approved, 
                        approved_by = userModelToUserDto(approved_user),
+                       designation = emp.designation,
+                       office_mail = emp.office_mail,
                        deleted_by = userModelToUserDto(deleted_user), 
                        created_by = userModelToUserDto(created_user), 
                        dept = departmentModelToDepartmentDto(dept)

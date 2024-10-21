@@ -29,7 +29,7 @@ class EmployeeService:
 
 
         try:
-            EmployeeRepoService.save(Employee(firstname = request.firstname, lastname = request.lastname, contact = request.contact, created_by = user.id, dept_id = dept.id, eid = request.eid), db)
+            EmployeeRepoService.save(Employee(firstname = request.firstname, lastname = request.lastname, designation = request.designation, contact = request.contact, created_by = user.id, dept_id = dept.id, eid = request.eid), db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
         
@@ -131,7 +131,7 @@ class EmployeeService:
         return ResponseUtils.wrap('Restored successfully')
     
     def approveById(id : int, logged_user, role, db : Session):   
-        user = UserRepoService.getByEmail(logged_user)    
+        user = UserRepoService.getByEmail(logged_user, db)    
         emp = EmployeeRepoService.getById(id, db)
 
         if emp is None:

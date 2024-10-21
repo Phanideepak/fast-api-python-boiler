@@ -10,9 +10,9 @@ from http import HTTPStatus
 
 class DeptService:
     def add(request : AddDepartmentBody, logged_user, db : Session):
-        user = UserRepoService.getByEmail(logged_user)
+        user = UserRepoService.getByEmail(logged_user, db)
         if DepartmentRepoService.getByName(request.name, db) is not None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('Department','name', request.name), HTTPStatus.INTERNAL_SERVER_ERROR)
+            return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('Department','name', request.name), HTTPStatus.BAD_REQUEST)
         try:
             DepartmentRepoService.save(Department(name= request.name, description = request.description, created_by = user.id), db)
         except Exception as e:
@@ -87,7 +87,7 @@ class DeptService:
         return ResponseUtils.wrap('Restored successfully')
     
     def approveById(id : int, logged_user, db : Session):
-        user = UserRepoService.getByEmail(logged_user)
+        user = UserRepoService.getByEmail(logged_user, db)
         dept = DepartmentRepoService.getById(id, db)
         if dept is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)

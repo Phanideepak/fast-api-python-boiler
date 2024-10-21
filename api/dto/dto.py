@@ -43,6 +43,7 @@ class AddEmployeeRequest(BaseModel):
      firstname : str
      lastname : str
      contact : str
+     designation : str
      eid : str
      dept_id : int
 
@@ -50,6 +51,7 @@ class UpdateEmployeeRequest(BaseModel):
      firstname : str
      lastname : str
      contact : str
+     designation : str
      eid : str
      dept_id : int
 
@@ -108,6 +110,8 @@ class EmployeeDto(BaseModel):
      deleted_by : Optional[UserDto] = None
      deleted_at : Optional[str] = None
      created_by : UserDto
+     designation : str
+     office_mail : str
      dept : DepartmentDto
 
 class ResponseDto(BaseModel):

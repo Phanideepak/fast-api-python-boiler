@@ -14,6 +14,7 @@ class EmployeeExecutor:
                   ValidationUtils.isEmpty(request.lastname, 'lastname')
                   ValidationUtils.isEmpty(request.contact, 'contact')
                   ValidationUtils.isEmpty(request.eid, 'eid')
+                  ValidationUtils.isEmpty(request.designation, 'designation')
                   ValidationUtils.isZero(request.dept_id, 'dept_id')
             except Exception as e:
                   return ResponseUtils.error_wrap(str(e),HTTPStatus.BAD_REQUEST)
@@ -26,6 +27,7 @@ class EmployeeExecutor:
                   ValidationUtils.isEmpty(request.lastname, 'lastname')
                   ValidationUtils.isEmpty(request.contact, 'contact')
                   ValidationUtils.isEmpty(request.eid, 'eid')
+                  ValidationUtils.isEmpty(request.designation, 'designation')
                   ValidationUtils.isZero(request.dept_id, 'dept_id')
             except Exception as e:
                   return ResponseUtils.error_wrap(str(e),HTTPStatus.BAD_REQUEST)
