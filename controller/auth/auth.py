@@ -6,7 +6,7 @@ from fastapi.exceptions import HTTPException
 from service.executor.auth_executor import AuthExecutor
 from config import database
 from datetime import timedelta, datetime
-from controller.auth.dependencies import RefreshTokenBearer
+from app_secrets.service.dependencies import RefreshTokenBearer
 from app_secrets.service.jwt_service import create_access_token
 
 router = APIRouter(prefix= '/auth',tags= ['Auth API'])

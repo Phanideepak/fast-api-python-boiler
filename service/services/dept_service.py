@@ -1,4 +1,5 @@
 from repository.ems.service.department_repo_service import DepartmentRepoService
+from repository.ems.service.user_repo_service import UserRepoService
 from repository.ems.model.ems import Department
 from api.dto.dto import AddDepartmentBody,UpdateDepartmentBody
 from sqlalchemy.orm import Session
@@ -8,11 +9,12 @@ from service.mapper.mapper import departmentModelToDepartmentDto, departmentMode
 from http import HTTPStatus
 
 class DeptService:
-    def add(request : AddDepartmentBody, uid, db : Session):
+    def add(request : AddDepartmentBody, logged_user, db : Session):
+        user = UserRepoService.getByEmail(logged_user, db)
         if DepartmentRepoService.getByName(request.name, db) is not None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('Department','name', request.name), HTTPStatus.INTERNAL_SERVER_ERROR)
+            return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('Department','name', request.name), HTTPStatus.BAD_REQUEST)
         try:
-            DepartmentRepoService.save(Department(name= request.name, description = request.description, created_by = uid), db)
+            DepartmentRepoService.save(Department(name= request.name, description = request.description, created_by = user.id), db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
         
@@ -53,7 +55,8 @@ class DeptService:
 
         return ResponseUtils.wrap(departmentModelToDepartmentDto(dept))
 
-    def deleteById(id : int, uid, db : Session):
+    def deleteById(id : int, logged_user, db : Session):
+        user = UserRepoService.getByEmail(logged_user, db)
         dept = DepartmentRepoService.getById(id, db)
         if dept is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
@@ -62,7 +65,7 @@ class DeptService:
             return ResponseUtils.error_wrap('Already Deleted!', HTTPStatus.BAD_REQUEST)
 
         try:
-            DepartmentRepoService.softDeleteById(id, uid, db)
+            DepartmentRepoService.softDeleteById(id, user.id, db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
 
@@ -83,7 +86,8 @@ class DeptService:
 
         return ResponseUtils.wrap('Restored successfully')
     
-    def approveById(id : int, uid, db : Session):
+    def approveById(id : int, logged_user, db : Session):
+        user = UserRepoService.getByEmail(logged_user, db)
         dept = DepartmentRepoService.getById(id, db)
         if dept is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
@@ -92,7 +96,7 @@ class DeptService:
             return ResponseUtils.error_wrap('Already Approved!', HTTPStatus.BAD_REQUEST)
 
         try:
-            DepartmentRepoService.approveById(id, uid, db)
+            DepartmentRepoService.approveById(id, user.id, db)
         except Exception as e:
             return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
 
