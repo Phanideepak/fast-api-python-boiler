@@ -1,12 +1,16 @@
 from application import create_app
 import uvicorn
+from fastapi import Request, status
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 
 app = create_app()
 
 
-@app.get('/health')
-def health_check():
-    return {'status' : 'health'}
+templates = Jinja2Templates(directory= 'templates')
+app.mount('/static', StaticFiles(directory='static'), name = 'static')
 
-# if __name__ == 'main':
-#     uvicorn.run('main:app', host='127.0.0.1', port = 11339, reload= True)
+@app.get('/')
+def test(request : Request):
+    return RedirectResponse(url='/dept/department-page', status_code = status.HTTP_302_FOUND)
