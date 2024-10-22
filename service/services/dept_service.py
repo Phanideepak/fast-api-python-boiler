@@ -54,6 +54,9 @@ class DeptService:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
 
         return ResponseUtils.wrap(departmentModelToDepartmentDto(dept))
+    
+    def fetchById(id : int, db : Session):
+        return departmentModelToDepartmentDto(DepartmentRepoService.getById(id, db))
 
     def deleteById(id : int, logged_user, db : Session):
         user = UserRepoService.getByEmail(logged_user, db)
@@ -109,3 +112,9 @@ class DeptService:
             return ResponseUtils.error_wrap(MessageUtils.entities_not_found('Department'), HTTPStatus.NOT_FOUND)
 
         return ResponseUtils.wrap(departmentModelToDepartmentDtoList(depts))
+    
+    def fetchAll(db : Session):
+        depts = DepartmentRepoService.getAll(db)
+       
+
+        return departmentModelToDepartmentDtoList(depts)

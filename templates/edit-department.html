@@ -1,0 +1,39 @@
+{% include 'layout.html' %}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Editing Department with department_id = {{dept.id}}
+        </div>
+
+        <div class="card-body">
+            <form id="editDepartmentForm">
+                <div class="form-group">
+                    <label >Name</label>
+                    <input type="text" class="form-control" value="{{dept.name}}" name="name" required/>
+                </div>
+
+                <div class="form-group">
+                    <label >Description</label>
+                    <textarea rows="3" name="description" class ="form-control" required>{{dept.description}}</textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary" >Edit</button>
+
+                {% if dept.approval_status == 'Not Approved' %}
+                  <button type="button" id ="approveDepartmentButton"  class="btn btn-primary">Approve</button>
+                {% endif %}
+
+                {% if dept.is_deleted %}
+                  <button type="button" id ="restoreDepartmentButton"  class="btn btn-success">Restore</button>
+                {% else %}
+                  <button type="button" id="deleteDepartmentButton" class="btn btn-danger">Delete</button>
+                {% endif %}
+
+                
+
+                <a class="btn btn-success" href="/dept/department-page">Back</a>
+            </form>
+        </div>
+    </div>
+</div>

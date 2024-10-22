@@ -1,6 +1,7 @@
 from api.dto.dto import SignUpRequest, LoginRequest
 from sqlalchemy.orm import Session
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, Response, Request
+from fastapi.templating import Jinja2Templates
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import HTTPException
 from service.executor.auth_executor import AuthExecutor
@@ -13,6 +14,23 @@ router = APIRouter(prefix= '/auth',tags= ['Auth API'])
 
 get_db = database.get_db
 
+templates = Jinja2Templates(directory='templates')
+
+# Templates
+@router.get('/login-page')
+def render_login_page(request : Request):
+    return templates.TemplateResponse('login.html', {'request' : request})
+
+
+@router.get('/register-page')
+def render_login_page(request : Request):
+    return templates.TemplateResponse('register.html', {'request' : request})
+
+
+
+
+
+# API End Points
 
 @router.post('/signup', summary= 'Signup API')
 def signup(request : SignUpRequest,  resp : Response, db : Session = Depends(get_db)):
