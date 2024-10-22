@@ -21,7 +21,9 @@ Requirements:
 9. pip install cryptography
 10. pip install passlib
 11. pip install bcrypt
-12. pip install httpx
-13. openssl rand -hex 32
-14. pip install aiofiles
-15. pip install jinja2
+pip install httpx
+12. openssl rand -hex 32
+
+
+Reference:
+- Exception:  https://www.youtube.com/watch?v=NJu0tmwb3n0&list=PLEt8Tae2spYnHy378vMlPH--87cfeh33P&index=9
