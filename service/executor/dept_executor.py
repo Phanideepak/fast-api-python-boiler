@@ -32,10 +32,6 @@ class DeptExecutor:
             
             return DeptService.getById(id, db)
       
-      def fetchById(id, db : Session):
-            return DeptService.fetchById(id, db)
-      
-      
       def deleteById(id, logged_user, db : Session):
             try:
                   ValidationUtils.isZero(id, 'dept_id')
@@ -63,7 +59,4 @@ class DeptExecutor:
       
       def getAll(db : Session):
           return DeptService.getAll(db)
-      
-      def fetchAll(db : Session):
-          return DeptService.fetchAll(db) 
             
