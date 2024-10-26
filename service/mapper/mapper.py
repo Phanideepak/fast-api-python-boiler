@@ -1,7 +1,6 @@
 from typing import List
 from repository.ems.model.ems import User, Department, Address, Employee
 from api.dto.dto import UserDto, DepartmentDto, AddressDto, EmployeeDto
-from datetime import datetime
 
 
 def employeeModelToEmployeeDto(emp : Employee, dept : Department, created_user : User, deleted_user : User, approved_user: User):
@@ -29,11 +28,24 @@ def departmentModelToDepartmentDto(dept : Department):
                           approval_status = ('Not Approved','Approved') [dept.is_approved] 
                           ,is_deleted = dept.is_deleted )
 
+def departmentCacheToDepartmentDto(dept : dict):
+    return DepartmentDto(id = dept['id'], name = dept['name'], description=dept['description'],
+                          approval_status = ('Not Approved','Approved') [dept['is_approved']] 
+                          ,is_deleted = dept['is_deleted'])
+
 def departmentModelToDepartmentDtoList(depts : List):
     deptDtos = []
 
     for dept in depts:
         deptDtos.append(departmentModelToDepartmentDto(dept))
+
+    return deptDtos
+
+def departmentCacheToDepartmentDtoList(depts : List[dict]):
+    deptDtos = []
+
+    for dept in depts:
+        deptDtos.append(departmentCacheToDepartmentDto(dept))
 
     return deptDtos
 

@@ -6,3 +6,4 @@ Topics that are Covered:
 - JWT Authentication and Role Based Authorization
 - Docker Integration
 - Jinja2 Templates and data rendering in html pages
+- Redis Integration.

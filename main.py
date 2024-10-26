@@ -1,5 +1,4 @@
 from application import create_app
-import uvicorn
 from fastapi import Request, status
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles

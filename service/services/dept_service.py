@@ -3,12 +3,18 @@ from repository.ems.service.user_repo_service import UserRepoService
 from repository.ems.model.ems import Department
 from api.dto.dto import AddDepartmentBody,UpdateDepartmentBody
 from sqlalchemy.orm import Session
+import json
 from service.utils.message_utils import MessageUtils
 from service.utils.response_util import ResponseUtils
-from service.mapper.mapper import departmentModelToDepartmentDto, departmentModelToDepartmentDtoList
+from service.mapper.mapper import departmentModelToDepartmentDto, departmentModelToDepartmentDtoList, departmentCacheToDepartmentDtoList
 from http import HTTPStatus
+from redis import Redis
+from repository.ems.cache.cache import CacheService
+from repository.ems.cache.keys import CacheKey
+        
 
 class DeptService:
+
     def add(request : AddDepartmentBody, logged_user, db : Session):
         user = UserRepoService.getByEmail(logged_user, db)
         if DepartmentRepoService.getByName(request.name, db) is not None:
@@ -106,15 +112,31 @@ class DeptService:
         return ResponseUtils.wrap('Restored successfully')
 
 
-    def getAll(db : Session):
+    def getAll(db : Session, cache : Redis):
+        depts = []
+        if CacheService.has(CacheKey.ALL_DEPARTMENTS.name, cache):
+            depts = CacheService.get(CacheKey.ALL_DEPARTMENTS.name, cache)
+            if depts is not None and len(depts) > 0:
+                return ResponseUtils.wrap(departmentCacheToDepartmentDtoList(depts))
+                
+        
         depts = DepartmentRepoService.getAll(db)
         if len(depts) == 0:
             return ResponseUtils.error_wrap(MessageUtils.entities_not_found('Department'), HTTPStatus.NOT_FOUND)
+       
+        CacheService.put(CacheKey.ALL_DEPARTMENTS.name, depts, cache)
+       
 
         return ResponseUtils.wrap(departmentModelToDepartmentDtoList(depts))
     
-    def fetchAll(db : Session):
+    def fetchAll(db : Session, cache : Redis):
+        depts = []
+
+        if CacheService.has(CacheKey.ALL_DEPARTMENTS.name, cache):
+            depts = CacheService.get(CacheKey.ALL_DEPARTMENTS.name, cache)
+            return departmentCacheToDepartmentDtoList(depts)
+        
         depts = DepartmentRepoService.getAll(db)
-       
+        CacheService.put(key = CacheKey.ALL_DEPARTMENTS.name, value = depts, cache = cache, jsonSerializer = Department.json_serializer)     
 
         return departmentModelToDepartmentDtoList(depts)

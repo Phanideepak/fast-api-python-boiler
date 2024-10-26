@@ -25,3 +25,5 @@ Requirements:
 13. openssl rand -hex 32
 14. pip install aiofiles
 15. pip install jinja2
+16. pip install aioredis
+17. pip install redis

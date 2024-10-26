@@ -3,6 +3,7 @@ from service.utils.response_util import ResponseUtils
 from service.services.dept_service import DeptService
 from http import HTTPStatus
 from sqlalchemy.orm import Session
+from redis import Redis
 
 class DeptExecutor:
       def add(request, logged_user, db : Session):
@@ -61,9 +62,9 @@ class DeptExecutor:
             return DeptService.approveById(id, logged_user, db)
       
       
-      def getAll(db : Session):
-          return DeptService.getAll(db)
+      def getAll(db : Session, cache : Redis):
+          return DeptService.getAll(db, cache)
       
-      def fetchAll(db : Session):
-          return DeptService.fetchAll(db) 
+      def fetchAll(db : Session, cache : Redis):
+          return DeptService.fetchAll(db, cache) 
             

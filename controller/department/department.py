@@ -4,16 +4,18 @@ from app_secrets.service.jwt_service import decode_token
 from fastapi import APIRouter, Depends, Response, Request, status
 from service.executor.dept_executor import DeptExecutor
 from service.executor.user_executor import UserExecutor
-from config import database
+from config import database, redis
 from app_secrets.service.dependencies import AccessTokenBearer, RoleChecker
 from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates 
+from redis import Redis
 
 
 templates = Jinja2Templates(directory='templates')
 router = APIRouter(prefix= '/dept',tags= ['Department'])
 
 get_db = database.get_db
+get_cache = redis.get_redis
 access_token_bearer = AccessTokenBearer()
 
 
@@ -24,7 +26,7 @@ def redirect_to_login():
 
 # Pages
 @router.get('/department-page')
-def render_department_page(request : Request, db : Session = Depends(get_db)):
+def render_department_page(request : Request, db : Session = Depends(get_db), cache  : Redis = Depends(get_cache)):
     access_token = request.cookies.get('access_token')
 
     
@@ -36,7 +38,7 @@ def render_department_page(request : Request, db : Session = Depends(get_db)):
     if token_data['role'] != 'ROLE_ADMIN':
        return redirect_to_login()
 
-    return templates.TemplateResponse('department.html', {'request' : request, 'depts' : DeptExecutor.fetchAll(db), 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})
+    return templates.TemplateResponse('department.html', {'request' : request, 'depts' : DeptExecutor.fetchAll(db, cache), 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})
 
 
 @router.get('/add-department-page')
@@ -112,7 +114,7 @@ def approveById(id : int,  resp : Response, db : Session = Depends(get_db), toke
 
 
 @router.get('/all', summary= 'Get all departments', dependencies=[Depends(RoleChecker(['ROLE_ADMIN']))])
-def getAll(resp : Response, db : Session = Depends(get_db), _: dict = Depends(access_token_bearer)):
-    responseBody = DeptExecutor.getAll(db)
+def getAll(resp : Response, db : Session = Depends(get_db), _: dict = Depends(access_token_bearer), cache  : Redis = Depends(get_cache)):
+    responseBody = DeptExecutor.getAll(db, cache)
     resp.status_code = responseBody.status_code
     return responseBody.dict(exclude_none= True)
