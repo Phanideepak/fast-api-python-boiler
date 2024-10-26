@@ -4,8 +4,9 @@ from api.dto.dto import UserDto, DepartmentDto, AddressDto, EmployeeDto
 
 
 def employeeModelToEmployeeDto(emp : Employee, dept : Department, created_user : User, deleted_user : User, approved_user: User):
-    empDto =  EmployeeDto(id = emp.id, eid = emp.eid, firstname = emp.firstname, lastname = emp.lastname, contact = emp.contact,
-                       is_approved= emp.is_approved, 
+    empDto =  EmployeeDto(id = emp.id, eid = emp.eid, firstname = emp.firstname, 
+                       lastname = emp.lastname, contact = emp.contact,
+                       approval_status = ('Not Approved','Approved') [emp.is_approved], 
                        approved_by = userModelToUserDto(approved_user),
                        designation = emp.designation,
                        office_mail = emp.office_mail,

@@ -1,5 +1,4 @@
 from repository.ems.service.user_repo_service import UserRepoService
-from repository.ems.service.employment_repo_service import EmployeeRepoService
 from repository.ems.model.ems import User, Role
 from api.dto.dto import SignUpRequest, SignUpResponse, LoginRequest, LoginResponse
 from sqlalchemy.orm import Session
@@ -30,9 +29,11 @@ class AuthService:
 
     def signin(request : LoginRequest, db : Session):
         user = UserRepoService.getByEmail(request.email, db)
+        
         if user is None:
             return ResponseUtils.error_wrap(MessageUtils.entity_not_found('User','email', request.email), HTTPStatus.BAD_REQUEST)
         
+
         if not bcryptContext.verify(request.password, user.password):
             return ResponseUtils.error_wrap(MessageUtils.invalid_password(), HTTPStatus.BAD_REQUEST)
 

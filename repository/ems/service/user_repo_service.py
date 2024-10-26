@@ -1,6 +1,5 @@
 from repository.ems.model.ems import User
 from sqlalchemy.orm import Session
-from fastapi import Depends
 
 
 class UserRepoService:

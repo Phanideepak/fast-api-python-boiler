@@ -1,6 +1,5 @@
 from repository.ems.service.address_repo_service import AddressRepoService
 from repository.ems.service.employment_repo_service import EmployeeRepoService
-from repository.ems.service.user_repo_service import UserRepoService
 from repository.ems.model.ems import Address
 from api.dto.dto import AddAddressRequest, UpdateAddressRequest
 from sqlalchemy.orm import Session

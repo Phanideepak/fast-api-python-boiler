@@ -42,6 +42,9 @@ class EmployeeExecutor:
             
             return EmployeeService.getById(id, db)
       
+      def fetchById(id, db : Session):
+            return EmployeeService.fetchById(id, db)
+      
       def deleteById(id, logged_user, db : Session):
             try:
                   ValidationUtils.isZero(id, 'employee_id')
@@ -69,4 +72,7 @@ class EmployeeExecutor:
       
       def getAll(db : Session):
           return EmployeeService.getAll(db)
+      
+      def fetchAll(db : Session):
+          return EmployeeService.fetchAll(db)
             

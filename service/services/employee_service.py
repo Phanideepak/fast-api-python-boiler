@@ -1,12 +1,12 @@
 from repository.ems.service.employment_repo_service import EmployeeRepoService
 from repository.ems.service.department_repo_service import DepartmentRepoService
 from repository.ems.service.user_repo_service import UserRepoService
-from repository.ems.model.ems import Employee, User,Role
+from repository.ems.model.ems import Employee, User
 from api.dto.dto import AddEmployeeRequest, UpdateEmployeeRequest
 from sqlalchemy.orm import Session
 from service.utils.message_utils import MessageUtils
 from service.utils.response_util import ResponseUtils
-from service.mapper.mapper import departmentModelToDepartmentDto, departmentModelToDepartmentDtoList, employeeModelToEmployeeDto
+from service.mapper.mapper import employeeModelToEmployeeDto
 from http import HTTPStatus
 from passlib.context import CryptContext
 from datetime import datetime
@@ -73,6 +73,10 @@ class EmployeeService:
         if request.dept_id != emp.dept_id:
             emp.dept_id = request.dept_id
             is_updated = True
+
+        if request.designation != emp.designation:
+            emp.designation = request.designation
+            is_updated = True
         
         if not is_updated:
            return ResponseUtils.error_wrap(MessageUtils.fields_not_modified(), HTTPStatus.BAD_REQUEST) 
@@ -98,6 +102,9 @@ class EmployeeService:
 
         return ResponseUtils.wrap(employeeModelToEmployeeDto(emp, dept, UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) ))
 
+    def fetchById(id : int, db : Session): 
+        emp = EmployeeRepoService.getById(id, db) 
+        return employeeModelToEmployeeDto(emp, DepartmentRepoService.getById(emp.dept_id, db),UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) )
 
     def deleteById(id : int, logged_user, db : Session):
         user = UserRepoService.getByEmail(logged_user, db)
@@ -185,3 +192,13 @@ class EmployeeService:
             empDtos.append(employeeModelToEmployeeDto(emp, DepartmentRepoService.getById(emp.dept_id, db), UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) ))
 
         return ResponseUtils.wrap(empDtos)
+
+    def fetchAll(db : Session):
+        emps = EmployeeRepoService.getAll(db)
+        empDtos = []
+
+
+        for emp in emps:
+            empDtos.append(employeeModelToEmployeeDto(emp, DepartmentRepoService.getById(emp.dept_id, db), UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) ))
+
+        return empDtos

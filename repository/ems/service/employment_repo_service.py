@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends
 from repository.ems.model.ems import Employee
 from datetime import datetime
 

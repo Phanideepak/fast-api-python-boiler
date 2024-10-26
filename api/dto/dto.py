@@ -95,8 +95,6 @@ class DepartmentDto(BaseModel):
      description : str 
      approval_status : str
      is_deleted : bool
-     def __init__(self, id, name, description, approval_status, is_deleted):
-          super().__init__(id = id,name = name, description = description, approval_status = approval_status, is_deleted = is_deleted)
 
 class EmployeeDto(BaseModel):
      id : int
@@ -104,14 +102,14 @@ class EmployeeDto(BaseModel):
      firstname : str
      lastname : str
      contact : str
-     is_approved : Optional[bool] = None
+     approval_status : str
      approved_by : Optional[UserDto] = None
      approved_at : Optional[str] = None
      deleted_by : Optional[UserDto] = None
      deleted_at : Optional[str] = None
      created_by : UserDto
      designation : str
-     office_mail : str
+     office_mail : Optional[str] = None
      dept : DepartmentDto
 
 class ResponseDto(BaseModel):

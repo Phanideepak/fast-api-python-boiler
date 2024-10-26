@@ -1,12 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-      <link rel = "stylesheet" type = "text/css" href = "{{ url_for('static', path = '/css/base.css') }}" />  
-      <meta charset="UTF-8" >  
-      <title>Employee Management System App</title>
-  </head>  
-        
-  <body>
-    <h1>Welcome to Course</h1>
-  </body>
-</html>
+{% include 'layout.html' %}
+
+<div class="container">
+  <div class="card">
+      <div class="card-header">
+        Home Panel
+      </div>
+
+      <div class="card-body">
+         <div class="d-flex flex-column">
+          {% if user.role == "ROLE_ADMIN" %}
+            <div class="p-2">
+              <label>View All Departments</label>
+              <button type="button" id = "viewAdminDepartmentButton" class="btn btn-primary">View</button>
+            </div>
+          {% endif %}
+         
+         {% if user.role == 'ROLE_ADMIN' or user.role == 'ROLE_HR' %}
+            <div class="p-2">
+                <label>View All Employees</label>
+                <button type="button" id = "viewAdminEmployeeButton" class="btn btn-primary" id = "">View</button>
+            </div>
+         {% endif %}
+
+         </div>
+
+      </div>
+  </div>
+</div>

@@ -38,6 +38,50 @@
         });
     }
 
+    const addEmployeeForm = document.getElementById('addEmployeeForm');
+    if (addEmployeeForm) {
+        addEmployeeForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const payload = {
+                firstname: data.firstname,
+                lastname: data.lastname,
+                contact : data.contact,
+                designation : data.designation,
+                eid : data.eid,
+                dept_id : data.dept_id
+            };
+
+
+            try {
+                const response = await fetch('/emp', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('access_token')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    form.reset(); // Clear the form
+                    window.location.href = '/emp/employee-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
     // Edit Department JS
     const editDepartmentForm = document.getElementById('editDepartmentForm');
     if (editDepartmentForm) {
@@ -83,6 +127,51 @@
         }
     });
      
+    }
+
+    const editEmployeeForm = document.getElementById('editEmployeeForm');
+    if (editEmployeeForm) {
+        editEmployeeForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const payload = {
+                firstname: data.firstname,
+                lastname: data.lastname,
+                contact : data.contact,
+                designation : data.designation,
+                eid : data.eid,
+                dept_id : data.dept_id
+            };
+
+
+            try {
+                const response = await fetch('/emp', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('access_token')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    form.reset(); // Clear the form
+                    window.location.href = '/emp/employee-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
     }
 
     const deleteDepartmentButton = document.getElementById('deleteDepartmentButton');
@@ -193,14 +282,138 @@
         });
     }
 
+    const deleteEmployeeButton = document.getElementById('deleteEmployeeButton');
 
+    if(deleteEmployeeButton){
+        //Delete Department JS
+        document.getElementById('deleteEmployeeButton').addEventListener('click', async function () {
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+
+            try {
+                const token = getCookie('access_token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
+
+                const response = await fetch(`/emp?id=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Handle success
+                    window.location.href = '/emp/employee-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+    const approveEmployeeButton = document.getElementById('approveEmployeeButton')
+
+    if(approveEmployeeButton){
+        //Approve Employee JS
+        document.getElementById('approveEmployeeButton').addEventListener('click', async function () {
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+            
+            try {
+                const token = getCookie('access_token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
+
+                const response = await fetch(`/emp/approve?id=${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Handle success
+                    window.location.href = '/emp/employee-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+    const restoreEmployeeButton = document.getElementById('restoreEmployeeButton')
+
+    if(restoreEmployeeButton){
+        //Restore Employee JS
+        document.getElementById('restoreEmployeeButton').addEventListener('click', async function () {
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+
+            try {
+                const token = getCookie('access_token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
+
+                const response = await fetch(`/emp/restore?id=${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Handle success
+                    window.location.href = '/emp/employee-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+
+    // View Admin Departnent
+    const viewAdminDepartmentButton = document.getElementById('viewAdminDepartmentButton');
+    if (viewAdminDepartmentButton) {
+        viewAdminDepartmentButton.addEventListener('click', async function (event) {
+            event.preventDefault();
+            window.location.href = '/dept/department-page';
+        });
+    }
+
+    // viewAdminEmployeeButton
+    const viewAdminEmployeeButton = document.getElementById('viewAdminEmployeeButton');
+    if (viewAdminEmployeeButton) {
+        viewAdminEmployeeButton.addEventListener('click', async function (event) {
+            event.preventDefault();
+            window.location.href = '/emp/employee-page';
+        });
+    }
 
     // Login JS
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         loginForm.addEventListener('submit', async function (event) {
             event.preventDefault();
-
             const form = event.target;
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
@@ -229,8 +442,7 @@
                     logout();
                     // Save token to cookie
                     document.cookie = `access_token=${data.data.access_token}; path=/`;
-                    
-                    window.location.href = '/dept/department-page'; // Change this to your desired redirect page
+                    window.location.href = '/user/home'; // Change this to your desired redirect page
                 } else {
                     // Handle error
                     const errorData = await response.json();
