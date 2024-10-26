@@ -103,6 +103,7 @@ class EmployeeDto(BaseModel):
      lastname : str
      contact : str
      approval_status : str
+     is_deleted : bool
      approved_by : Optional[UserDto] = None
      approved_at : Optional[str] = None
      deleted_by : Optional[UserDto] = None

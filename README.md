@@ -22,4 +22,15 @@ Topics that are Covered:
    - Get Department By Id
    - Get All Departments (Integrated with redis)
 3. Employment API:
-   -  
+   -  Add Employmee
+   -  Update Employee
+   -  Get Employee by id
+   -  Get All Employees
+   -  PATCH Approve API
+   -  Patch Restore API
+   -  Delete API
+4. Address API:
+   - Add Address API
+   - Fetch All Address for employee
+   - Fetch Address By  address_id
+   - 

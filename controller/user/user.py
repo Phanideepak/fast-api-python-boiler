@@ -30,7 +30,7 @@ def render_home_page(request : Request, db : Session = Depends(get_db)):
     if token_data is None:
         return redirect_to_login()
 
-    if token_data['role'] not in ['ROLE_ADMIN','ROLE_HR']:
+    if token_data['role'] not in ['ROLE_ADMIN','ROLE_HR','ROLE_EMPLOYEE']:
        return redirect_to_login()
 
     return templates.TemplateResponse('home.html', {'request' : request, 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})

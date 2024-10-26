@@ -49,7 +49,7 @@ def render_add_employee_page(request : Request, db : Session = Depends(get_db), 
     if token_data['role'] not in ['ROLE_ADMIN','ROLE_HR']:
        return redirect_to_login()
 
-    return templates.TemplateResponse('add-employee.html', {'request' : request, 'depts' : DeptExecutor.fetchAll(db, cache) })
+    return templates.TemplateResponse('add-employee.html', {'request' : request, 'depts' : DeptExecutor.fetchAll(db, cache), 'user' : UserExecutor.fetchByEmail(token_data['sub'], db) })
 
 @router.get('/edit-employee-page/{id}')
 def render_edit_employee_page(id, request : Request, db : Session = Depends(get_db), cache  : Redis = Depends(get_cache)):
@@ -64,7 +64,7 @@ def render_edit_employee_page(id, request : Request, db : Session = Depends(get_
     if token_data['role'] not in ['ROLE_ADMIN','ROLE_HR']:
        return redirect_to_login()
 
-    return templates.TemplateResponse('edit-employee.html', {'request' : request, 'emp' : EmployeeExecutor.fetchById(id, db), 'depts' : DeptExecutor.fetchAll(db, cache)})
+    return templates.TemplateResponse('edit-employee.html', {'request' : request, 'emp' : EmployeeExecutor.fetchById(id, db), 'depts' : DeptExecutor.fetchAll(db, cache), 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})
 
 
 

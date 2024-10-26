@@ -49,9 +49,15 @@ class AddressExecutor:
                   return ResponseUtils.error_wrap(str(e), HTTPStatus.BAD_REQUEST)
             
             return AddressService.getById(id, logged_user, db)
+      
+      def fetchById(id, logged_user, db : Session):
+            return AddressService.fetchById(id, logged_user, db)
 
       def getAll(logged_user, db : Session):
             return AddressService.getAll(logged_user, db)
+      
+      def fetchAll(logged_user, db : Session):
+            return AddressService.fetchAll(logged_user, db)
       
       def deleteById(id, logged_user, db : Session):
             try:

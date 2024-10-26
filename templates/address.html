@@ -1,0 +1,55 @@
+{% include 'layout.html' %}
+
+<div class="container">
+    <div class="card text-center">
+        <div class="card-header">
+             Addresses  
+        </div>
+        <div class="card-body">
+            <h5 class="card-title"> List of Addresses</h5>
+            <p class = "card-text">
+                Info about Addresses
+            </p>
+            <table class = 'table table-hover'>
+                <thead>
+                    <tr>
+                        <th scope = 'col' >#</th>
+                        <th scope="col">id</th>
+                        <th scope="col">First Line</th>
+                        <th scope="col">Second Line</th>
+                        <th scope="col">Land Mark</th>
+                        <th scope="col">Primary</th>
+                        <th scope="col">Phone</th>
+                        <th scope="col">City</th>
+                        <th scope="col">Pincode</th>
+                        <th scope="col">State</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for address in addresses %}
+                    <tr class="pointer">
+                        <td>{{loop.index}}</td>
+                        <td>{{address.id}}</td>
+                        <td>{{address.first_line}}</td>
+                        <td>{{address.second_line if address.second_line else '-'}}</td>
+                        <td>{{address.land_mark if address.land_mark else '-'}}</td>
+                        <td>{{address.is_primary}}</td>
+                        <td>{{address.phone}}</td>
+                        <td>{{address.city}}</td>
+                        <td>{{address.pincode}}</td>
+                        <td>{{address.state}}</td>
+                        <td>
+                           <button onclick="window.location.href = 'edit-address-page/{{address.id}}'" type="button"
+                            class="btn btn-info">
+                              Edit
+                           </button> 
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <a href="add-address-page" class="btn btn-primary">Add Address</a>
+        </div>
+    </div>
+</div>

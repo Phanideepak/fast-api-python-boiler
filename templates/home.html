@@ -18,9 +18,16 @@
          {% if user.role == 'ROLE_ADMIN' or user.role == 'ROLE_HR' %}
             <div class="p-2">
                 <label>View All Employees</label>
-                <button type="button" id = "viewAdminEmployeeButton" class="btn btn-primary" id = "">View</button>
+                <button type="button" id = "viewAdminEmployeeButton" class="btn btn-primary">View</button>
             </div>
          {% endif %}
+
+         {% if user.role == 'ROLE_EMPLOYEE' %}
+            <div class="p-2">
+                <label>View All Address</label>
+                <button type="button" id = "viewAdminAddressButton" class="btn btn-primary">View</button>
+            </div>
+        {% endif %}
 
          </div>
 

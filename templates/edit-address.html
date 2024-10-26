@@ -1,0 +1,60 @@
+{% include 'layout.html' %}
+
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            Editing address with address_id = {{address.id}}.
+        </div>
+
+        <div class="card-body">
+            <form id="editAddressForm">
+                <div class="form-group">
+                    <label >First Line</label>
+                    <input type="text" class="form-control" value="{{address.first_line}}" name="first_line" required/>
+                </div>
+
+                <div class="form-group">
+                    <label >Second Line</label>
+                    <input type="text" class="form-control" name="second_line" value="{{address.second_line}}"/>
+                </div>
+
+                <div class="form-group">
+                    <label >Landmark</label>
+                    <input type="text" class="form-control" name="landmark" value="{{address.land_mark}}"/>
+                </div>
+
+                <div class="form-group">
+                    <label >Phone</label>
+                    <input type="text" class="form-control" name="phone" value="{{address.phone}}" required/>
+                </div>
+
+                <div class="form-group">
+                    <label >City</label>
+                    <input type="text" class="form-control" name="city" value="{{address.city}}" required/>
+                </div>
+
+                <div class="form-group">
+                    <label >Pincode</label>
+                    <input type="text" class="form-control" name="pincode" value="{{address.pincode}}" required/>
+                </div>
+
+                <div class="form-group">
+                    <label >State</label>
+                    <input type="text" class="form-control" name="state" value="{{address.state}}" required/>
+                </div>
+
+                <button type="submit" class="btn btn-primary" >Edit</button>
+                
+                {% if not address.is_primary %}
+                   <button type="button" id ="makeAddressPrimaryButton"  class="btn btn-primary">Make Primary</button>
+                {% endif %}
+
+                <button type="button" class="btn btn-danger" id = "deleteAddressButton" >Delete</button>
+
+                <a class="btn btn-success" href="/address/address-page">Back</a>
+
+
+            </form>
+        </div>
+    </div>
+</div>

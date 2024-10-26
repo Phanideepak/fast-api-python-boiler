@@ -26,7 +26,7 @@ class AddressService:
         address = AddressRepoService.getByIdAndEid(request.id, emp.id, db)
 
         if address is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found_two('Address','id', request.id, 'eid', eid), HTTPStatus.INTERNAL_SERVER_ERROR)
+            return ResponseUtils.error_wrap(MessageUtils.entity_not_found_two('Address','id', request.id, 'eid', emp.id), HTTPStatus.INTERNAL_SERVER_ERROR)
         
         is_updated = False
 
@@ -38,7 +38,7 @@ class AddressService:
             address.second_line = request.second_line
             is_updated = True
         
-        if request.land_mark and (request.land_mark != address.land_mark):
+        if request.land_mark != address.land_mark:
             address.land_mark = request.land_mark
             is_updated = True
 
@@ -77,6 +77,13 @@ class AddressService:
 
         return ResponseUtils.wrap(addressModelToAddressDto(address))
     
+    def fetchById(id : int, logged_user : str, db : Session):
+        emp = EmployeeRepoService.getByOfficeMail(logged_user, db)
+        address = AddressRepoService.getByIdAndEid(id, emp.id, db)
+
+        return addressModelToAddressDto(address)
+    
+    
     def getAll(logged_user : str, db : Session):
         emp = EmployeeRepoService.getByOfficeMail(logged_user, db)
         addresses = AddressRepoService.getByEid(emp.id, db)
@@ -84,6 +91,12 @@ class AddressService:
             return ResponseUtils.error_wrap(MessageUtils.entities_not_found('Address'), HTTPStatus.NOT_FOUND)
 
         return ResponseUtils.wrap(addressModelToAddressDtoList(addresses))
+    
+    def fetchAll(logged_user : str, db : Session):
+        emp = EmployeeRepoService.getByOfficeMail(logged_user, db)
+        addresses = AddressRepoService.getByEid(emp.id, db)
+
+        return addressModelToAddressDtoList(addresses)
     
 
     def deleteById(id : int, logged_user : str, db : Session):

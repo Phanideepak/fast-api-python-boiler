@@ -82,6 +82,100 @@
         });
     }
 
+    // Add Address JS
+    const addAddressForm = document.getElementById('addAddressForm');
+    if (addAddressForm) {
+        addAddressForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            const payload = {
+                first_line : data.first_line,
+                second_line : data.second_line,
+                land_mark : data.landmark,
+                phone : data.phone,
+                city: data.city,
+                pincode: data.pincode,
+                state : data.state
+            };
+
+
+            try {
+                const response = await fetch('/address', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('access_token')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    form.reset(); // Clear the form
+                    window.location.href = '/address/address-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+    const editAddressForm = document.getElementById('editAddressForm');
+    if (editAddressForm) {
+        editAddressForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+
+            const payload = {
+                id : id,
+                first_line : data.first_line,
+                second_line : data.second_line,
+                land_mark : data.landmark,
+                phone : data.phone,
+                city: data.city,
+                pincode: data.pincode,
+                state : data.state
+            };
+
+
+            try {
+                const response = await fetch('/address', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('access_token')}`
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (response.ok) {
+                    form.reset(); // Clear the form
+                    window.location.href = '/address/address-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
     // Edit Department JS
     const editDepartmentForm = document.getElementById('editDepartmentForm');
     if (editDepartmentForm) {
@@ -210,6 +304,43 @@
         });
     }
 
+    const deleteAddressButton = document.getElementById('deleteAddressButton');
+
+    if(deleteAddressButton){
+        //Delete Address JS
+        document.getElementById('deleteAddressButton').addEventListener('click', async function () {
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+
+            try {
+                const token = getCookie('access_token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
+
+                const response = await fetch(`/address?id=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Handle success
+                    window.location.href = '/address/address-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+
     const approveDepartmentButton = document.getElementById('approveDepartmentButton')
 
     if(approveDepartmentButton){
@@ -270,6 +401,42 @@
                 if (response.ok) {
                     // Handle success
                     window.location.href = '/dept/department-page';
+                } else {
+                    // Handle error
+                    const errorData = await response.json();
+                    alert(`Error: ${errorData.exception}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again.');
+            }
+        });
+    }
+
+    const makeAddressPrimaryButton = document.getElementById('makeAddressPrimaryButton')
+
+    if(makeAddressPrimaryButton){
+        //Restore Department JS
+        document.getElementById('makeAddressPrimaryButton').addEventListener('click', async function () {
+            var url = window.location.pathname;
+            const id = url.substring(url.lastIndexOf('/') + 1);
+
+            try {
+                const token = getCookie('access_token');
+                if (!token) {
+                    throw new Error('Authentication token not found');
+                }
+
+                const response = await fetch(`/address/primary?id=${id}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    // Handle success
+                    window.location.href = '/address/address-page';
                 } else {
                     // Handle error
                     const errorData = await response.json();
@@ -408,6 +575,16 @@
             window.location.href = '/emp/employee-page';
         });
     }
+
+    // viewAdminAddressButton
+    const viewAdminAddressButton = document.getElementById('viewAdminAddressButton');
+    if (viewAdminAddressButton) {
+        viewAdminAddressButton.addEventListener('click', async function (event) {
+            event.preventDefault();
+            window.location.href = '/address/address-page';
+        });
+    }
+
 
     // Login JS
     const loginForm = document.getElementById('loginForm');

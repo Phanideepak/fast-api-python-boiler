@@ -52,7 +52,7 @@ def render_add_department_page(request : Request, db : Session = Depends(get_db)
     if token_data['role'] != 'ROLE_ADMIN':
        return redirect_to_login()
 
-    return templates.TemplateResponse('add-department.html', {'request' : request})
+    return templates.TemplateResponse('add-department.html', {'request' : request, 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})
 
 @router.get('/edit-department-page/{id}')
 def render_edit_department_page(id, request : Request, db : Session = Depends(get_db)):
@@ -67,7 +67,7 @@ def render_edit_department_page(id, request : Request, db : Session = Depends(ge
     if token_data['role'] != 'ROLE_ADMIN':
        return redirect_to_login()
 
-    return templates.TemplateResponse('edit-department.html', {'request' : request, 'dept' : DeptExecutor.fetchById(id, db)})
+    return templates.TemplateResponse('edit-department.html', {'request' : request, 'dept' : DeptExecutor.fetchById(id, db), 'user' : UserExecutor.fetchByEmail(token_data['sub'], db)})
 
 
 
