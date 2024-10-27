@@ -36,4 +36,3 @@ Topics that are Covered:
    - Update Address API
    - Delete Address API
    - Make Address Primary API
-5. TO DO Tasks API:  
