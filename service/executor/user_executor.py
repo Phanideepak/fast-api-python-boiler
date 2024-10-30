@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 class UserExecutor:
       def getAll(db : Session):
-            return UserService.getall(db)
+            return UserService.getAll(db)
       
       def fetchByEmail(email, db : Session):
             return UserService.fetchByEmail(email, db)

@@ -113,7 +113,7 @@ class EmployeeDto(BaseModel):
      office_mail : Optional[str] = None
      dept : DepartmentDto
 
-class ResponseDto(BaseModel):
+class ResponseDto(BaseModel, object):
       status_message : str = 'Success'
       status_code : int  = 200 
 

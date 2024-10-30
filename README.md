@@ -7,7 +7,7 @@ Topics that are Covered:
 - Docker Integration
 - Jinja2 Templates and data rendering in html pages
 - Redis Integration.
-
+- Global exception handler on rest api
 
 # List of CRUD API's Created 
 1. Auth API : 
@@ -36,3 +36,5 @@ Topics that are Covered:
    - Update Address API
    - Delete Address API
    - Make Address Primary API
+5. TODO API:
+   - 

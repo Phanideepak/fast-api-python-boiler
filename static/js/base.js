@@ -623,6 +623,7 @@
                 } else {
                     // Handle error
                     const errorData = await response.json();
+                    console.log(errorData.exception)
                     alert(`Error: ${errorData.exception}`);
                 }
             } catch (error) {

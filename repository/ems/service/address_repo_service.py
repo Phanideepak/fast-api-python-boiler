@@ -1,5 +1,7 @@
 from sqlalchemy.orm import Session
+from api.exception.errors import DataNotFoundException
 from repository.ems.model.ems import Address
+from service.utils.message_utils import MessageUtils
 
 
 class AddressRepoService:
@@ -20,12 +22,23 @@ class AddressRepoService:
                                       })
         db.commit()
 
-    
-    def getByIdAndEid(id : int, eid : int,  db : Session):
+    def fetchByIdAndEid(id : int, eid : int,  db : Session):
         return db.query(Address).filter(Address.id == id, Address.eid == eid).first()
     
-    def getByEid(eid : int,  db : Session):
+    def fetchByEid(eid : int,  db : Session):
         return db.query(Address).filter(Address.eid == eid).all()
+
+    def validateAndGetByIdAndEid(id : int, eid : int,  db : Session):
+        emp = db.query(Address).filter(Address.id == id, Address.eid == eid).first()
+        if emp is None:
+            raise DataNotFoundException(MessageUtils.entity_not_found_two('Address','id',id, 'eid', eid))
+        return emp
+    
+    def validateAndGetByEid(eid : int,  db : Session):
+        emps = db.query(Address).filter(Address.eid == eid).all()
+        if len(emps) == 0:
+            raise DataNotFoundException(MessageUtils.entity_not_found_one('Addresses','eid',eid))
+        return emps
     
     
     def makePrimary(id : int, eid : int, db : Session):
