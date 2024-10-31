@@ -1,6 +1,6 @@
 import jwt
 from datetime import datetime, timezone
-from config.main.config import Config 
+from config.main.config import Config
 
 def create_access_token(username, expires_delta, role = None, refresh = False):
     payload = {'sub': username, 'role' : role}

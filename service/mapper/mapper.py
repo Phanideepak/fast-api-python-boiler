@@ -1,15 +1,16 @@
 from typing import List
 from repository.ems.model.ems import User, Department, Address, Employee
 from api.dto.dto import UserDto, DepartmentDto, AddressDto, EmployeeDto
-from datetime import datetime
 
 
 def employeeModelToEmployeeDto(emp : Employee, dept : Department, created_user : User, deleted_user : User, approved_user: User):
-    empDto =  EmployeeDto(id = emp.id, eid = emp.eid, firstname = emp.firstname, lastname = emp.lastname, contact = emp.contact,
-                       is_approved= emp.is_approved, 
+    empDto =  EmployeeDto(id = emp.id, eid = emp.eid, firstname = emp.firstname, 
+                       lastname = emp.lastname, contact = emp.contact,
+                       approval_status = ('Not Approved','Approved') [emp.is_approved], 
                        approved_by = userModelToUserDto(approved_user),
                        designation = emp.designation,
                        office_mail = emp.office_mail,
+                       is_deleted = emp.is_deleted,
                        deleted_by = userModelToUserDto(deleted_user), 
                        created_by = userModelToUserDto(created_user), 
                        dept = departmentModelToDepartmentDto(dept)
@@ -29,11 +30,24 @@ def departmentModelToDepartmentDto(dept : Department):
                           approval_status = ('Not Approved','Approved') [dept.is_approved] 
                           ,is_deleted = dept.is_deleted )
 
+def departmentCacheToDepartmentDto(dept : dict):
+    return DepartmentDto(id = dept['id'], name = dept['name'], description=dept['description'],
+                          approval_status = ('Not Approved','Approved') [dept['is_approved']] 
+                          ,is_deleted = dept['is_deleted'])
+
 def departmentModelToDepartmentDtoList(depts : List):
     deptDtos = []
 
     for dept in depts:
         deptDtos.append(departmentModelToDepartmentDto(dept))
+
+    return deptDtos
+
+def departmentCacheToDepartmentDtoList(depts : List[dict]):
+    deptDtos = []
+
+    for dept in depts:
+        deptDtos.append(departmentCacheToDepartmentDto(dept))
 
     return deptDtos
 

@@ -1,60 +1,53 @@
+from api.exception.errors import NotModifiedException, ServiceException, ValidationException
 from repository.ems.service.employment_repo_service import EmployeeRepoService
 from repository.ems.service.department_repo_service import DepartmentRepoService
 from repository.ems.service.user_repo_service import UserRepoService
-from repository.ems.model.ems import Employee, User,Role
+from repository.ems.model.ems import Employee, User
 from api.dto.dto import AddEmployeeRequest, UpdateEmployeeRequest
 from sqlalchemy.orm import Session
 from service.utils.message_utils import MessageUtils
 from service.utils.response_util import ResponseUtils
-from service.mapper.mapper import departmentModelToDepartmentDto, departmentModelToDepartmentDtoList, employeeModelToEmployeeDto
+from service.mapper.mapper import employeeModelToEmployeeDto
 from http import HTTPStatus
 from passlib.context import CryptContext
 from datetime import datetime
+
+from service.utils.validation_utils import ValidationUtils
 
 bcryptContext = CryptContext(schemes=['bcrypt'])
 
 class EmployeeService:
     def add(request : AddEmployeeRequest, logged_user, role, db : Session):
-        user = UserRepoService.getByEmail(logged_user, db)
-        dept = DepartmentRepoService.getById(request.dept_id, db)
-        
-        if dept is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id', request.dept_id), HTTPStatus.NOT_FOUND)
+        user = UserRepoService.validateAndGetByEmail(logged_user, db)
+        dept = DepartmentRepoService.validateAndGetById(request.dept_id, db)
 
         if role == 'ROLE_ADMIN' and dept.name != 'HR':
-            return ResponseUtils.error_wrap('Admin Users can only recruit HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('Admin Users can only recruit HR Employees')
         
         if role == 'ROLE_HR' and dept.name == 'HR':
-            return ResponseUtils.error_wrap('HR Users cannot recruit HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('HR Users cannot recruit HR Employees')
 
 
         try:
             EmployeeRepoService.save(Employee(firstname = request.firstname, lastname = request.lastname, designation = request.designation, contact = request.contact, created_by = user.id, dept_id = dept.id, eid = request.eid), db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
         
         return ResponseUtils.wrap('added successfully')
     
 
     def update(request : UpdateEmployeeRequest, logged_user, role, db : Session):
-        user = UserRepoService.getByEmail(logged_user, db)
-        emp = EmployeeRepoService.getByEid(request.eid, db)
+        user = UserRepoService.validateAndGetByEmail(logged_user, db)
+        emp = EmployeeRepoService.validateAndGetByEid(request.eid, db)
 
-        if emp is None:
-            return  ResponseUtils.error_wrap(MessageUtils.entity_not_found('Employee','eid', request.eid), HTTPStatus.NOT_FOUND)
-
-        curr_dept = DepartmentRepoService.getById(emp.dept_id, db)
-
-        if curr_dept is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id', request.id), HTTPStatus.NOT_FOUND)
-        
+        curr_dept = DepartmentRepoService.validateAndGetById(emp.dept_id, db)
         
 
         if role == 'ROLE_ADMIN' and curr_dept.name != 'HR':
-            return ResponseUtils.error_wrap('Admin Users can only edit HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('Admin Users can only edit HR Employees')
         
         if role == 'ROLE_HR' and curr_dept.name == 'HR':
-            return ResponseUtils.error_wrap('HR Users cannot edit HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('HR Users cannot edit HR Employees')
         
         is_updated = False
 
@@ -73,85 +66,70 @@ class EmployeeService:
         if request.dept_id != emp.dept_id:
             emp.dept_id = request.dept_id
             is_updated = True
+
+        if request.designation != emp.designation:
+            emp.designation = request.designation
+            is_updated = True
         
         if not is_updated:
-           return ResponseUtils.error_wrap(MessageUtils.fields_not_modified(), HTTPStatus.BAD_REQUEST) 
+           raise NotModifiedException()
 
         try:
             EmployeeRepoService.update(emp, db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
         
         return ResponseUtils.wrap('updated successfully')
 
 
     def getById(id : int, db : Session):
-        emp = EmployeeRepoService.getById(id, db)
+        emp = EmployeeRepoService.validateAndGetById(id, db)
+        dept = DepartmentRepoService.validateAndGetById(emp.dept_id, db)
+        return ResponseUtils.wrap(employeeModelToEmployeeDto(emp, dept, UserRepoService.validateAndGetById(emp.created_by, db), UserRepoService.fetchById(emp.deleted_by, db), UserRepoService.fetchById(emp.approved_by, db) ))
 
-        if emp is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Employee','id',id), HTTPStatus.NOT_FOUND)
-
-        dept = DepartmentRepoService.getById(emp.dept_id, db)
-
-        if dept is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id',id), HTTPStatus.NOT_FOUND)
-
-        return ResponseUtils.wrap(employeeModelToEmployeeDto(emp, dept, UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) ))
-
+    def fetchById(id : int, db : Session): 
+        emp = EmployeeRepoService.validateAndGetById(id, db) 
+        return employeeModelToEmployeeDto(emp, DepartmentRepoService.validateAndGetById(emp.dept_id, db),UserRepoService.validateAndGetById(emp.created_by, db), UserRepoService.fetchById(emp.deleted_by, db), UserRepoService.fetchById(emp.approved_by, db) )
 
     def deleteById(id : int, logged_user, db : Session):
-        user = UserRepoService.getByEmail(logged_user, db)
-        emp = EmployeeRepoService.getById(id, db)
-        if emp is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Employee','id',id), HTTPStatus.NOT_FOUND)
+        user = UserRepoService.validateAndGetByEmail(logged_user, db)
+        emp = EmployeeRepoService.validateAndGetById(id, db)
         
-        if emp.is_deleted:
-            return ResponseUtils.error_wrap('Already Deleted!', HTTPStatus.BAD_REQUEST)
+        ValidationUtils.isTrue(not emp.is_deleted, 'Already Deleted!')
 
         try:
             EmployeeRepoService.softDeleteById(id, user.id, db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
 
         return ResponseUtils.wrap('Deleted successfully')
     
     def restoreById(id : int, db : Session):
-        emp = EmployeeRepoService.getById(id, db)
-        if emp is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Employee','id',id), HTTPStatus.NOT_FOUND)
+        emp = EmployeeRepoService.validateAndGetById(id, db)
         
-        if not emp.is_deleted:
-            return ResponseUtils.error_wrap('Already Restored!', HTTPStatus.BAD_REQUEST)
+        ValidationUtils.isTrue(emp.is_deleted, 'Already Restored!')
 
         try:
             EmployeeRepoService.restoreById(id, db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
 
         return ResponseUtils.wrap('Restored successfully')
     
     def approveById(id : int, logged_user, role, db : Session):   
-        user = UserRepoService.getByEmail(logged_user, db)    
-        emp = EmployeeRepoService.getById(id, db)
-
-        if emp is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Employee','id',id), HTTPStatus.NOT_FOUND)
+        user = UserRepoService.validateAndGetByEmail(logged_user, db)    
+        emp = EmployeeRepoService.validateAndGetById(id, db)
         
         dept = DepartmentRepoService.getById(emp.dept_id, db)
-        
-        if dept is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('Department','id', emp.dept_id), HTTPStatus.NOT_FOUND)
 
         if role == 'ROLE_ADMIN' and dept.name != 'HR':
-            return ResponseUtils.error_wrap('Admin Users can only approve HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('Admin Users can only approve HR Employees')
         
         if role == 'ROLE_HR' and dept.name == 'HR':
-            return ResponseUtils.error_wrap('HR Users cannot approve HR Employees', HTTPStatus.BAD_REQUEST)
+            raise ValidationException('HR Users cannot approve HR Employees')
     
 
-        if emp.is_approved:
-            return ResponseUtils.error_wrap('Already Approved!', HTTPStatus.BAD_REQUEST)
-
+        ValidationUtils.isTrue(not emp.is_approved, 'Already Approved!')
 
         emp_role = 'ROLE_EMPLOYEE'
 
@@ -168,20 +146,25 @@ class EmployeeService:
             
             UserRepoService.save(User(firstname = emp.firstname, lastname = emp.lastname, email = emp.office_mail, password = bcryptContext.hash('abc@123'), role = emp_role), db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
 
         return ResponseUtils.wrap('approved successfully')
 
 
     def getAll(db : Session):
-        emps = EmployeeRepoService.getAll(db)
-        if len(emps) == 0:
-            return ResponseUtils.error_wrap(MessageUtils.entities_not_found('Employee'), HTTPStatus.NOT_FOUND)
-
-
+        emps = EmployeeRepoService.validateAndGetAll(db)
         empDtos = []
 
         for emp in emps:
-            empDtos.append(employeeModelToEmployeeDto(emp, DepartmentRepoService.getById(emp.dept_id, db), UserRepoService.getById(emp.created_by, db), UserRepoService.getById(emp.deleted_by, db), UserRepoService.getById(emp.approved_by, db) ))
+            empDtos.append(employeeModelToEmployeeDto(emp, DepartmentRepoService.validateAndGetById(emp.dept_id, db), UserRepoService.validateAndGetById(emp.created_by, db), UserRepoService.fetchById(emp.deleted_by, db), UserRepoService.fetchById(emp.approved_by, db) ))
 
         return ResponseUtils.wrap(empDtos)
+
+    def fetchAll(db : Session):
+        emps = EmployeeRepoService.fetchAll(db)
+        empDtos = []
+
+        for emp in emps:
+            empDtos.append(employeeModelToEmployeeDto(emp, DepartmentRepoService.validateAndGetById(emp.dept_id, db), UserRepoService.validateAndGetById(emp.created_by, db), UserRepoService.fetchById(emp.deleted_by, db), UserRepoService.fetchById(emp.approved_by, db) ))
+
+        return empDtos

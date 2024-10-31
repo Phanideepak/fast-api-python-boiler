@@ -31,7 +31,7 @@ class User(Base):
 
   
 
-class Department(Base):
+class Department(Base, object):
     __tablename__ = 'department'
 
     id = Column(Integer, primary_key = True, autoincrement='auto', index = True)
@@ -53,6 +53,10 @@ class Department(Base):
         self.description = description
         self.created_by = created_by
 
+    def json_serializer(obj):
+        if isinstance(obj, Department):
+           return {'id' : obj.id, 'name' : obj.name, 'description':obj.description, 'is_approved': obj.is_approved, 'is_deleted' : obj.is_deleted}
+        raise TypeError('Object of type `Department` is not JSON serializable')
 
 
 class Address(Base):

@@ -6,6 +6,7 @@ from config import database
 from app_secrets.service.jwt_service import decode_token
 from repository.ems.service.user_repo_service import UserRepoService
 from repository.ems.model.ems import User
+from api.exception.errors import TokenException, NoPermissionException
 
 get_db = database.get_db
 
@@ -20,7 +21,7 @@ class TokenBearer(HTTPBearer):
         token_data = decode_token(token)
 
         if not self.token_valid(token):
-            raise Exception('Invalid token')
+            raise TokenException('Invalid token')
         
         self.verify_token_data(token_data)
 
@@ -31,24 +32,24 @@ class TokenBearer(HTTPBearer):
         return token_data is not None
     
     def verify_token_data(self, token_data):
-         raise Exception("Please Override this method in child classes")
+         raise TokenException("Please Override this method in child classes")
     
 
 class AccessTokenBearer(TokenBearer):
     def verify_token_data(self, token_data: dict) -> None:
         if token_data and token_data["refresh"]:
-            raise Exception('Access Token Required')
+            raise TokenException('Access Token Required')
 
 
 class RefreshTokenBearer(TokenBearer):
     def verify_token_data(self, token_data: dict) -> None:
         if token_data and not token_data["refresh"]:
-            raise Exception('Refresh Token Required')
+            raise TokenException('Refresh Token Required')
         
 def get_current_user(token_details : dict = Depends(AccessTokenBearer()), db : Session = Depends(get_db)):
     user_email = token_details["sub"]
 
-    return UserRepoService.getByEmail(user_email, db)
+    return UserRepoService.fetchByEmail(user_email, db)
 
 class RoleChecker:
     def __init__(self, allowed_roles : List[str]):
@@ -58,4 +59,4 @@ class RoleChecker:
         if current_user.role.name in self.allowed_roles:
             return True
 
-        raise Exception('Insufficient Permission')
+        raise NoPermissionException('Insufficient Permission')
