@@ -6,4 +6,4 @@ class UserExecutor:
             return UserService.getAll(db)
       
       def fetchByEmail(email, db : Session):
-            return UserService.fetchByEmail(email, db)
+            return UserService.fetchByEmail(email.strip(), db)

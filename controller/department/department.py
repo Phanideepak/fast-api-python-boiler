@@ -1,12 +1,11 @@
-from api.dto.dto import AddDepartmentBody, UpdateDepartmentBody, WrappedResponse
+from api.dto.dto import AddDepartmentBody, UpdateDepartmentBody
 from sqlalchemy.orm import Session
 from app_secrets.service.jwt_service import decode_token
-from fastapi import APIRouter, Depends, Response, Request, status
+from fastapi import APIRouter, Depends, Response, Request
 from service.executor.dept_executor import DeptExecutor
 from service.executor.user_executor import UserExecutor
 from config import database, redis
 from app_secrets.service.dependencies import AccessTokenBearer, RoleChecker
-from starlette.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates 
 from redis import Redis
 from controller.common.common import redirect_to_login

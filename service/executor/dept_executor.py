@@ -1,21 +1,23 @@
 from service.utils.validation_utils import ValidationUtils
-from service.utils.response_util import ResponseUtils
 from service.services.dept_service import DeptService
-from http import HTTPStatus
 from sqlalchemy.orm import Session
 from redis import Redis
 
 class DeptExecutor:
       def add(request, logged_user, db : Session):
             ValidationUtils.isEmpty(request.name,'name')
+            request.name = request.name.strip()
             ValidationUtils.isEmpty(request.description, 'description')
+            request.description = request.description.strip()
 
             return DeptService.add(request, logged_user,db)
       
       def update(request, db : Session):
             ValidationUtils.isZero(request.id, 'id')
             ValidationUtils.isEmpty(request.name,'name')
+            request.name = request.name.strip()
             ValidationUtils.isEmpty(request.description, 'description')
+            request.description = request.description.strip()
 
             return DeptService.update(request, db)
 

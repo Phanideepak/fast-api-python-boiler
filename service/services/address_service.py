@@ -4,10 +4,8 @@ from repository.ems.model.ems import Address
 from api.dto.dto import AddAddressRequest, UpdateAddressRequest
 from api.exception.errors import NotModifiedException, ServiceException
 from sqlalchemy.orm import Session
-from service.utils.message_utils import MessageUtils
 from service.utils.response_util import ResponseUtils
 from service.mapper.mapper import addressModelToAddressDto, addressModelToAddressDtoList
-from http import HTTPStatus
 
 from service.utils.validation_utils import ValidationUtils
 

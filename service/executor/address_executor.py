@@ -16,6 +16,12 @@ class AddressExecutor:
             request.pincode = request.pincode.strip()
             ValidationUtils.isEmpty(request.state, 'state')
             request.state = request.state.strip()
+            
+            if request.second_line is not None:
+                  request.second_line = request.second_line.strip()
+            
+            if request.land_mark is not None:
+                  request.land_mark = request.land_mark.strip()
 
 
             return AddressService.add(request, logged_user, db)
@@ -32,6 +38,12 @@ class AddressExecutor:
             request.pincode = request.pincode.strip()
             ValidationUtils.isEmpty(request.state, 'state')
             request.state = request.state.strip()
+
+            if request.second_line is not None:
+                  request.second_line = request.second_line.strip()
+            
+            if request.land_mark is not None:
+                  request.land_mark = request.land_mark.strip()
 
             return AddressService.update(request, logged_user, db)
 
