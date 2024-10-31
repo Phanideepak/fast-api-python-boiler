@@ -1,5 +1,5 @@
+from api.exception.errors import ServiceException, ValidationException
 from repository.ems.service.user_repo_service import UserRepoService
-from repository.ems.service.employment_repo_service import EmployeeRepoService
 from repository.ems.model.ems import User, Role
 from api.dto.dto import SignUpRequest, SignUpResponse, LoginRequest, LoginResponse
 from sqlalchemy.orm import Session
@@ -10,18 +10,20 @@ from http import HTTPStatus
 from passlib.context import CryptContext
 from datetime import timedelta
 
+from service.utils.validation_utils import ValidationUtils
+
 bcryptContext = CryptContext(schemes=['bcrypt'])
 
 class AuthService:
     def signup(request : SignUpRequest, db : Session):
-        if UserRepoService.getByEmail(request.email, db) is not None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_already_exists('User','email', request.email), HTTPStatus.BAD_REQUEST)
+        if UserRepoService.validateAndGetByEmail(request.email, db) is not None:
+            raise ValidationException(MessageUtils.entity_already_exists('User','email', request.email))
         try:
             UserRepoService.save(User(email = request.email,firstname = request.firstname, lastname = request.lastname, password = bcryptContext.hash(request.password), role = Role.ROLE_ADMIN), db)
         except Exception as e:
-            return ResponseUtils.error_wrap(str(e), HTTPStatus.INTERNAL_SERVER_ERROR)
+            raise ServiceException(str(e))
         
-        user = UserRepoService.getByEmail(request.email, db)
+        user = UserRepoService.validateAndGetByEmail(request.email, db)
 
         access_token = create_access_token(username = request.email, expires_delta= timedelta(days=1), role= Role.ROLE_ADMIN.name)
         refresh_token = create_access_token(username = request.email, expires_delta= timedelta(days=7), role= Role.ROLE_ADMIN.name, refresh = True)
@@ -29,12 +31,9 @@ class AuthService:
         return ResponseUtils.wrap(SignUpResponse(message = MessageUtils.signup_success_message(), access_token = access_token, refresh_token = refresh_token))
 
     def signin(request : LoginRequest, db : Session):
-        user = UserRepoService.getByEmail(request.email, db)
-        if user is None:
-            return ResponseUtils.error_wrap(MessageUtils.entity_not_found('User','email', request.email), HTTPStatus.BAD_REQUEST)
-        
-        if not bcryptContext.verify(request.password, user.password):
-            return ResponseUtils.error_wrap(MessageUtils.invalid_password(), HTTPStatus.BAD_REQUEST)
+        user = UserRepoService.validateAndGetByEmail(request.email, db)
+
+        ValidationUtils.isTrue(bcryptContext.verify(request.password, user.password), MessageUtils.invalid_password())
 
         access_token = create_access_token(username = request.email, expires_delta= timedelta(days=1), role= user.role.name)
         refresh_token = create_access_token(username = request.email, expires_delta= timedelta(days=7), role= user.role.name, refresh = True)

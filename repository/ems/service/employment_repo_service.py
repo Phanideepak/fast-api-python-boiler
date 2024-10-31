@@ -1,7 +1,9 @@
 from sqlalchemy.orm import Session
-from fastapi import Depends
+from api.exception.errors import DataNotFoundException
 from repository.ems.model.ems import Employee
 from datetime import datetime
+
+from service.utils.message_utils import MessageUtils
 
 
 class EmployeeRepoService:
@@ -23,14 +25,32 @@ class EmployeeRepoService:
                                       })
         db.commit()
 
-    def getByEid(eid : str, db : Session):
+    def fetchByEid(eid : str, db : Session):
         return db.query(Employee).filter(Employee.eid == eid).first()
     
-    def getByOfficeMail(office_mail : str, db : Session):
+    def fetchByOfficeMail(office_mail : str, db : Session):
         return db.query(Employee).filter(Employee.office_mail == office_mail).first()
     
-    def getById(id : int, db : Session):
+    def fetchById(id : int, db : Session):
         return db.query(Employee).filter(Employee.id == id).first()
+    
+    def validateAndGetByEid(eid : str, db : Session):
+        emp = db.query(Employee).filter(Employee.eid == eid).first()
+        if emp is None:
+            raise DataNotFoundException(MessageUtils.entity_not_found('employee','eid',eid))
+        return emp
+    
+    def validateAndGetByOfficeMail(office_mail : str, db : Session):
+        emp =  db.query(Employee).filter(Employee.office_mail == office_mail).first()
+        if emp is None:
+            raise DataNotFoundException(MessageUtils.entity_not_found('employee','office_mail',office_mail))
+        return emp
+    
+    def validateAndGetById(id : int, db : Session):
+        emp =  db.query(Employee).filter(Employee.id == id).first()
+        if emp is None:
+            raise DataNotFoundException(MessageUtils.entity_not_found('employee','id',id))
+        return emp
     
     def softDeleteById(id : int, uid : int, db : Session):
         db.query(Employee).filter(Employee.id == id).update({Employee.is_deleted : True, Employee.deleted_by : uid, Employee.deleted_at : datetime.now()})
@@ -43,6 +63,12 @@ class EmployeeRepoService:
     def approveById(id : int, uid : int, db : Session):
         db.query(Employee).filter(Employee.id == id).update({Employee.is_approved : True, Employee.approved_at : datetime.now(), Employee.approved_by : uid})
         db.commit()
-    
-    def getAll(db : Session):
+
+    def fetchAll(db : Session):
         return db.query(Employee).filter(Employee.is_deleted == False).all()
+
+    def validateAndGetAll(db : Session):
+        emps = db.query(Employee).filter(Employee.is_deleted == False).all()
+        if len(emps) == 0:
+            raise DataNotFoundException(MessageUtils.entities_not_found('employees'))
+        return emps

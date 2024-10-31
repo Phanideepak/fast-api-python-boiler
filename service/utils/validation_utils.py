@@ -1,4 +1,7 @@
 
+from api.exception.errors import ValidationException
+
+
 def emptyMessage(field):
         return (f"{field} cannot be blank or nill")
     
@@ -18,24 +21,24 @@ def isGreaterThan(field,threshold):
 class ValidationUtils():
     def isTrue(expression : bool, message : str):
         if not expression:
-            raise Exception(message)
+            raise ValidationException(message)
 
     def isEmpty(value : str, field: str):
         if value is None:
-           raise Exception(noneMessage(field))
+           raise ValidationException(noneMessage(field))
         else:
            value = value.strip()
            if not value:
-             raise Exception(emptyMessage(field))  
+             raise ValidationException(emptyMessage(field))  
 
     
     def isNone(value, field: str):
         if value is None:
-            raise Exception(noneMessage(field))
+            raise ValidationException(noneMessage(field))
     
     def isZero(value, field: str):
         if value is None:
-            raise Exception(noneMessage(field))
+            raise ValidationException(noneMessage(field))
         else:
             if value == 0:
-                raise Exception(zeroMessage(field))
+                raise ValidationException(zeroMessage(field))

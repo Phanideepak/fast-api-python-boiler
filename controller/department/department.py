@@ -1,14 +1,21 @@
-from api.dto.dto import AddDepartmentBody, UpdateDepartmentBody, WrappedResponse
+from api.dto.dto import AddDepartmentBody, UpdateDepartmentBody
 from sqlalchemy.orm import Session
 from fastapi import APIRouter, Depends, Response
 from service.executor.dept_executor import DeptExecutor
-from config import database
+from config import database, redis
 from app_secrets.service.dependencies import AccessTokenBearer, RoleChecker
+from redis import Redis
 
 router = APIRouter(prefix= '/dept',tags= ['Department'])
 
 get_db = database.get_db
+get_cache = redis.get_redis
 access_token_bearer = AccessTokenBearer()
+
+
+
+
+# API End points
 
 @router.post('', summary= 'Create Department', dependencies=[Depends(RoleChecker(['ROLE_ADMIN']))])
 def create(request : AddDepartmentBody,  resp : Response, db : Session = Depends(get_db), tokendetails: dict = Depends(access_token_bearer)):
@@ -48,7 +55,7 @@ def restoreById(id : int,  resp : Response, db : Session = Depends(get_db), toke
 
 
 @router.get('/all', summary= 'Get all departments', dependencies=[Depends(RoleChecker(['ROLE_ADMIN']))])
-def getAll(resp : Response, db : Session = Depends(get_db), _: dict = Depends(access_token_bearer)):
-    responseBody = DeptExecutor.getAll(db)
+def getAll(resp : Response, db : Session = Depends(get_db), _: dict = Depends(access_token_bearer), cache  : Redis = Depends(get_cache)):
+    responseBody = DeptExecutor.getAll(db, cache)
     resp.status_code = responseBody.status_code
     return responseBody.dict(exclude_none= True)
